@@ -1,0 +1,77 @@
+{
+  "name": "Coffee Shop WhatsApp Bot",
+  "description": "A WhatsApp business intelligence bot for coffee shops using Clover POS integration",
+  "repository": "https://github.com/yourusername/coffee-shop-whatsapp-bot",
+  "logo": "https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/whatsapp.svg",
+  "keywords": ["whatsapp", "bot", "coffee", "pos", "clover", "business-intelligence"],
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0"
+    }
+  ],
+  "env": {
+    "FLASK_ENV": {
+      "description": "Flask environment",
+      "value": "production"
+    },
+    "SECRET_KEY": {
+      "description": "Secret key for Flask sessions",
+      "generator": "secret"
+    },
+    "CLOVER_API_TOKEN": {
+      "description": "Clover API access token",
+      "required": false
+    },
+    "CLOVER_MERCHANT_ID": {
+      "description": "Clover merchant ID",
+      "required": false
+    },
+    "CLOVER_BASE_URL": {
+      "description": "Clover API base URL",
+      "value": "https://sandbox-api.clover.com",
+      "required": false
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "description": "Twilio Account SID for WhatsApp",
+      "required": false
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "description": "Twilio Auth Token",
+      "required": false
+    },
+    "TWILIO_WHATSAPP_NUMBER": {
+      "description": "Twilio WhatsApp number (e.g., whatsapp:+14155238886)",
+      "required": false
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key for LLM responses",
+      "required": false
+    },
+    "OPENAI_MODEL": {
+      "description": "OpenAI model to use",
+      "value": "gpt-4.1-mini",
+      "required": false
+    },
+    "LLM_PROVIDER": {
+      "description": "LLM provider (openai, together, xai)",
+      "value": "openai",
+      "required": false
+    }
+  },
+  "scripts": {
+    "postdeploy": "python src/database_init.py"
+  }
+}
+
