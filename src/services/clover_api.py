@@ -61,12 +61,11 @@ class CloverAPIClient:
                 'expand': 'lineItems'
             }
             
-            # For now, let's try without date filtering to test the basic API call
-            # TODO: Re-enable date filtering once we confirm the API works
-            # if start_date and end_date:
-            #     start_ms = int(start_date.timestamp() * 1000)
-            #     end_ms = int(end_date.timestamp() * 1000)
-            #     params['filter'] = f'createdTime>={start_ms} AND createdTime<={end_ms}'
+            # Add date filtering for orders
+            if start_date and end_date:
+                start_ms = int(start_date.timestamp() * 1000)
+                end_ms = int(end_date.timestamp() * 1000)
+                params['filter'] = f'createdTime>={start_ms} AND createdTime<={end_ms}'
             
             response = self.session.get(url, params=params)
             response.raise_for_status()

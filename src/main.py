@@ -24,6 +24,7 @@ from src.routes.user import user_bp
 from src.routes.webhook import webhook_bp
 from src.routes.api import api_bp
 from src.config import Config
+from src.services.scheduler import SalesDataScheduler
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config.from_object(Config)
@@ -40,6 +41,15 @@ app.register_blueprint(api_bp, url_prefix='/api')
 db.init_app(app)
 with app.app_context():
     db.create_all()
+
+# Initialize and start scheduler
+scheduler = SalesDataScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+# Set scheduler instance for API routes
+from src.routes.api import set_scheduler
+set_scheduler(scheduler)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

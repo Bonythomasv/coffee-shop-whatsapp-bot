@@ -3,16 +3,23 @@ API routes for sales data queries and system management.
 """
 
 import logging
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 from src.services.sales_processor import SalesProcessor
 from src.services.clover_api import CloverAPIClient
-from src.models.sales_cache import SalesCache, WhatsAppMessage
-from src.models.user import db
 from src.config import Config
+import logging
 
 logger = logging.getLogger(__name__)
 
 api_bp = Blueprint('api', __name__)
+
+# Get scheduler instance from main app
+scheduler = None
+
+def set_scheduler(scheduler_instance):
+    """Set the scheduler instance for API endpoints."""
+    global scheduler
+    scheduler = scheduler_instance
 
 # Initialize services
 sales_processor = SalesProcessor()
@@ -323,6 +330,56 @@ def test_webhook():
         
     except Exception as e:
         logger.error(f"Error testing webhook: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@api_bp.route('/scheduler/status', methods=['GET'])
+def get_scheduler_status():
+    """Get scheduler status and job information."""
+    try:
+        if not scheduler:
+            return jsonify({
+                'success': False,
+                'error': 'Scheduler not initialized'
+            }), 500
+            
+        status = scheduler.get_scheduler_status()
+        next_refresh = scheduler.get_next_refresh_time()
+        
+        return jsonify({
+            'success': True,
+            'scheduler_status': status,
+            'next_refresh': next_refresh.isoformat() if next_refresh else None
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting scheduler status: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@api_bp.route('/scheduler/refresh', methods=['POST'])
+def trigger_manual_refresh():
+    """Trigger a manual sales data refresh."""
+    try:
+        if not scheduler:
+            return jsonify({
+                'success': False,
+                'error': 'Scheduler not initialized'
+            }), 500
+            
+        scheduler.trigger_manual_refresh()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Manual refresh triggered successfully'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error triggering manual refresh: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
