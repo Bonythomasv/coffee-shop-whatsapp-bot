@@ -5,9 +5,11 @@ Message processor for handling WhatsApp messages and generating responses.
 import logging
 import re
 import time
-from typing import Dict, List
-from src.services.sales_processor import SalesProcessor
+from typing import Dict, List, Optional
 from src.services.llm_client import LLMClient
+from src.services.sales_processor import SalesProcessor
+from src.services.whatsapp_client import WhatsAppClient
+from src.services.multimedia_formatter import MultimediaFormatter
 from src.config import Config
 
 logger = logging.getLogger(__name__)
@@ -19,6 +21,8 @@ class MessageProcessor:
         """Initialize the message processor."""
         self.sales_processor = SalesProcessor()
         self.llm_client = LLMClient()
+        self.whatsapp_client = WhatsAppClient()
+        self.multimedia_formatter = MultimediaFormatter()
         
         # Common patterns for sales-related questions
         self.sales_patterns = [
@@ -146,14 +150,34 @@ class MessageProcessor:
             logger.info(f"⏱️  CACHE CHECK TIME: {cache_check_time:.2f}ms")
             
             # Get sales data
-            data_fetch_start = time.time()
-            sales_data = self._get_relevant_sales_data(message, merchant_id)
-            data_fetch_time = (time.time() - data_fetch_start) * 1000
-            logger.info(f"⏱️  SALES DATA FETCH TIME: {data_fetch_time:.2f}ms")
+            sales_fetch_start = time.time()
+            sales_data = self.sales_processor.get_best_selling_items(merchant_id, limit=10)
+            sales_fetch_time = (time.time() - sales_fetch_start) * 1000
+            logger.info(f"⏱️  SALES DATA FETCH TIME: {sales_fetch_time:.2f}ms")
             
-            # Use LLM to generate a natural response
+            if not sales_data:
+                return "I don't have any sales data available right now. Please check back later."
+            
+            # Check if multimedia response is requested
+            multimedia_start = time.time()
+            if self._should_create_multimedia(message):
+                logger.info("🎨 Creating multimedia response")
+                formatted_text, image_path = self.multimedia_formatter.create_sales_report_card(
+                    {'best_selling_items': sales_data}
+                )
+                multimedia_time = (time.time() - multimedia_start) * 1000
+                logger.info(f"⏱️  MULTIMEDIA CREATION TIME: {multimedia_time:.2f}ms")
+                
+                # For now, return the formatted text (image handling will be added to webhook)
+                return formatted_text
+            
+            # Generate standard LLM response
             llm_start = time.time()
-            response = self._generate_llm_response(message, sales_data)
+            response = self.llm_client.generate_response(
+                message, 
+                context="You are a helpful coffee shop assistant providing sales insights.",
+                sales_data={'best_selling_items': sales_data}
+            )
             llm_time = (time.time() - llm_start) * 1000
             logger.info(f"⏱️  LLM RESPONSE GENERATION TIME: {llm_time:.2f}ms")
             
@@ -164,7 +188,24 @@ class MessageProcessor:
         except Exception as e:
             total_time = (time.time() - start_time) * 1000
             logger.error(f"❌ Error handling sales question after {total_time:.2f}ms: {e}")
-            return "I'm having trouble accessing your sales data right now. Please try again later."
+            return "Sorry, I couldn't retrieve your sales data right now. Please try again later."
+    
+    def _should_create_multimedia(self, message: str) -> bool:
+        """
+        Determine if the message should trigger a multimedia response.
+        
+        Args:
+            message: The message text
+            
+        Returns:
+            True if multimedia response should be created
+        """
+        multimedia_keywords = [
+            'report', 'chart', 'graph', 'visual', 'show me', 'summary',
+            'weekly', 'monthly', 'performance', 'dashboard'
+        ]
+        
+        return any(keyword in message.lower() for keyword in multimedia_keywords)
     
     def _handle_general_question(self, message: str, from_number: str) -> str:
         """
