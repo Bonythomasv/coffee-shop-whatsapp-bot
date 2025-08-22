@@ -3,6 +3,7 @@ Sales data processor for analyzing Clover orders and updating cache.
 """
 
 import logging
+import time
 from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 from collections import defaultdict
@@ -36,25 +37,46 @@ class SalesProcessor:
         Returns:
             Dictionary with processing results
         """
+        start_time = time.time()
+        logger.info(f"📊 SALES PROCESSOR START - Merchant: {merchant_id}, Days: {days_back}")
+        
         try:
             # Calculate date range
+            date_calc_start = time.time()
             end_date = datetime.utcnow()
             start_date = end_date - timedelta(days=days_back)
+            date_calc_time = (time.time() - date_calc_start) * 1000
+            logger.info(f"⏱️  DATE CALCULATION TIME: {date_calc_time:.2f}ms")
             
             logger.info(f"Processing sales data for merchant {merchant_id} from {start_date} to {end_date}")
             
             # Fetch orders from Clover API
+            orders_fetch_start = time.time()
             orders = self.clover_client.get_orders(start_date=start_date, end_date=end_date)
+            orders_fetch_time = (time.time() - orders_fetch_start) * 1000
+            logger.info(f"⏱️  CLOVER ORDERS FETCH TIME: {orders_fetch_time:.2f}ms ({len(orders)} orders)")
             
             # Fetch inventory items for item details
+            inventory_fetch_start = time.time()
             inventory_items = self.clover_client.get_inventory_items()
             item_lookup = {item['id']: item for item in inventory_items}
+            inventory_fetch_time = (time.time() - inventory_fetch_start) * 1000
+            logger.info(f"⏱️  CLOVER INVENTORY FETCH TIME: {inventory_fetch_time:.2f}ms ({len(inventory_items)} items)")
             
             # Process orders to calculate sales metrics
+            metrics_calc_start = time.time()
             sales_data = self._calculate_sales_metrics(orders, item_lookup)
+            metrics_calc_time = (time.time() - metrics_calc_start) * 1000
+            logger.info(f"⏱️  SALES METRICS CALCULATION TIME: {metrics_calc_time:.2f}ms")
             
             # Update cache in database
+            cache_update_start = time.time()
             cache_results = self._update_sales_cache(merchant_id, sales_data, start_date, end_date)
+            cache_update_time = (time.time() - cache_update_start) * 1000
+            logger.info(f"⏱️  CACHE UPDATE TIME: {cache_update_time:.2f}ms")
+            
+            total_time = (time.time() - start_time) * 1000
+            logger.info(f"📊 SALES PROCESSOR END - Total time: {total_time:.2f}ms")
             
             return {
                 'success': True,
@@ -62,14 +84,17 @@ class SalesProcessor:
                 'items_updated': len(cache_results),
                 'period_start': start_date.isoformat(),
                 'period_end': end_date.isoformat(),
-                'sales_data': sales_data
+                'sales_data': sales_data,
+                'processing_time_ms': int(total_time)
             }
             
         except Exception as e:
-            logger.error(f"Error processing sales data: {e}")
+            total_time = (time.time() - start_time) * 1000
+            logger.error(f"❌ Error processing sales data after {total_time:.2f}ms: {e}")
             return {
                 'success': False,
-                'error': str(e)
+                'error': str(e),
+                'processing_time_ms': int(total_time)
             }
     
     def _calculate_sales_metrics(self, orders: List[Dict], item_lookup: Dict) -> Dict:

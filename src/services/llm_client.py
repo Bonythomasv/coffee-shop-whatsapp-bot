@@ -4,6 +4,7 @@ Supported providers: OpenAI, DeepSeek, Together AI, xAI
 """
 
 import logging
+import time
 import openai
 from typing import Dict, List, Optional, Union
 from src.config import Config
@@ -64,14 +65,24 @@ class LLMClient:
         Returns:
             Generated response text
         """
+        start_time = time.time()
+        logger.info(f"🤖 LLM CLIENT START - Provider: {self.provider}")
+        
         try:
             if self.use_llm and self.client:
-                return self._generate_llm_response(question, context, sales_data)
+                response = self._generate_llm_response(question, context, sales_data)
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"🤖 LLM CLIENT END (SUCCESS) - Total time: {total_time:.2f}ms")
+                return response
             else:
-                return self._generate_fallback_response(question, sales_data)
+                response = self._generate_fallback_response(question, sales_data)
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"🤖 LLM CLIENT END (FALLBACK) - Total time: {total_time:.2f}ms")
+                return response
                 
         except Exception as e:
-            logger.error(f"Error generating {self.provider} response: {e}")
+            total_time = (time.time() - start_time) * 1000
+            logger.error(f"❌ Error generating {self.provider} response after {total_time:.2f}ms: {e}")
             return self._generate_fallback_response(question, sales_data)
     
     def _generate_llm_response(self, question: str, context: str, sales_data: Dict = None) -> str:
@@ -81,9 +92,13 @@ class LLMClient:
             
         try:
             # Prepare the prompt
+            prompt_start = time.time()
             prompt = self._prepare_prompt(question, context, sales_data)
+            prompt_time = (time.time() - prompt_start) * 1000
+            logger.info(f"⏱️  PROMPT PREPARATION TIME: {prompt_time:.2f}ms")
             
             # Common parameters for all providers
+            params_start = time.time()
             params = {
                 "model": self.model,
                 "messages": [
@@ -108,21 +123,35 @@ class LLMClient:
                 # Together AI specific parameters
                 params['stop'] = ['</s>', '###']
             
+            params_time = (time.time() - params_start) * 1000
+            logger.info(f"⏱️  PARAMS SETUP TIME: {params_time:.2f}ms")
+            
             # Make API call to the configured provider
+            api_start = time.time()
+            logger.info(f"🌐 Making API call to {self.provider.upper()} with model: {self.model}")
             response = self.client.chat.completions.create(**params)
+            api_time = (time.time() - api_start) * 1000
+            logger.info(f"⏱️  {self.provider.upper()} API CALL TIME: {api_time:.2f}ms")
             
             # Extract the response
+            extraction_start = time.time()
             generated_text = response.choices[0].message.content.strip()
+            extraction_time = (time.time() - extraction_start) * 1000
+            logger.info(f"⏱️  RESPONSE EXTRACTION TIME: {extraction_time:.2f}ms")
             
             # Validate response length
+            validation_start = time.time()
             if len(generated_text) < 10:
                 logger.warning(f"{self.provider.capitalize()} response too short, using fallback")
                 return self._generate_fallback_response(question, sales_data)
+            validation_time = (time.time() - validation_start) * 1000
+            logger.info(f"⏱️  RESPONSE VALIDATION TIME: {validation_time:.2f}ms")
             
+            logger.info(f"✅ {self.provider.upper()} response generated successfully ({len(generated_text)} chars)")
             return generated_text
             
         except Exception as e:
-            logger.error(f"{self.provider.capitalize()} API error: {e}")
+            logger.error(f"❌ {self.provider.capitalize()} API error: {e}")
             return self._generate_fallback_response(question, sales_data)
     
     def _prepare_prompt(self, question: str, context: str, sales_data: Dict = None) -> str:

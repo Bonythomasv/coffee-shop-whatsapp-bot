@@ -36,7 +36,8 @@
 								},
 								{
 									"key": "MessageSid",
-									"value": "TEST_TOP_ITEMS_001"
+									"value": "",
+									"description": "Leave empty for auto-generation during local testing"
 								}
 							]
 						},
@@ -79,7 +80,8 @@
 								},
 								{
 									"key": "MessageSid",
-									"value": "TEST_BEST_DRINK_002"
+									"value": "",
+									"description": "Leave empty for auto-generation during local testing"
 								}
 							]
 						},
@@ -122,7 +124,8 @@
 								},
 								{
 									"key": "MessageSid",
-									"value": "TEST_REVENUE_003"
+									"value": "",
+									"description": "Leave empty for auto-generation during local testing"
 								}
 							]
 						},

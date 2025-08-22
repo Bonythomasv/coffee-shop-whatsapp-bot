@@ -4,6 +4,7 @@ Message processor for handling WhatsApp messages and generating responses.
 
 import logging
 import re
+import time
 from typing import Dict, List
 from src.services.sales_processor import SalesProcessor
 from src.services.llm_client import LLMClient
@@ -39,30 +40,61 @@ class MessageProcessor:
         Returns:
             Response text to send back
         """
+        start_time = time.time()
+        logger.info(f"🔄 MESSAGE PROCESSOR START - Processing: '{message_body[:50]}...'")
+        
         try:
+            # Message preprocessing
+            preprocessing_start = time.time()
             message_body = message_body.strip().lower()
+            preprocessing_time = (time.time() - preprocessing_start) * 1000
+            logger.info(f"⏱️  MESSAGE PREPROCESSING TIME: {preprocessing_time:.2f}ms")
             
             # Handle empty messages
             if not message_body:
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"🏁 MESSAGE PROCESSOR END (EMPTY) - Total time: {total_time:.2f}ms")
                 return "Hello! I can help you with sales information for your coffee shop. Try asking 'What's my best-selling drink this week?'"
+            
+            # Intent classification
+            intent_start = time.time()
             
             # Handle greeting messages
             if self._is_greeting(message_body):
+                intent_time = (time.time() - intent_start) * 1000
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"⏱️  INTENT CLASSIFICATION TIME: {intent_time:.2f}ms (GREETING)")
+                logger.info(f"🏁 MESSAGE PROCESSOR END (GREETING) - Total time: {total_time:.2f}ms")
                 return "Hello! I'm your coffee shop sales assistant. I can help you with sales data and analytics. Try asking about your best-selling items!"
             
             # Handle help requests
             if self._is_help_request(message_body):
+                intent_time = (time.time() - intent_start) * 1000
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"⏱️  INTENT CLASSIFICATION TIME: {intent_time:.2f}ms (HELP)")
+                logger.info(f"🏁 MESSAGE PROCESSOR END (HELP) - Total time: {total_time:.2f}ms")
                 return self._get_help_message()
             
             # Check if this is a sales-related question
             if self._is_sales_question(message_body):
-                return self._handle_sales_question(message_body, from_number)
+                intent_time = (time.time() - intent_start) * 1000
+                logger.info(f"⏱️  INTENT CLASSIFICATION TIME: {intent_time:.2f}ms (SALES)")
+                response = self._handle_sales_question(message_body, from_number)
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"🏁 MESSAGE PROCESSOR END (SALES) - Total time: {total_time:.2f}ms")
+                return response
             
             # For other messages, try to use LLM to understand intent
-            return self._handle_general_question(message_body, from_number)
+            intent_time = (time.time() - intent_start) * 1000
+            logger.info(f"⏱️  INTENT CLASSIFICATION TIME: {intent_time:.2f}ms (GENERAL)")
+            response = self._handle_general_question(message_body, from_number)
+            total_time = (time.time() - start_time) * 1000
+            logger.info(f"🏁 MESSAGE PROCESSOR END (GENERAL) - Total time: {total_time:.2f}ms")
+            return response
             
         except Exception as e:
-            logger.error(f"Error processing message: {e}")
+            total_time = (time.time() - start_time) * 1000
+            logger.error(f"❌ Error processing message after {total_time:.2f}ms: {e}")
             return "Sorry, I encountered an error while processing your request. Please try again."
     
     def _is_greeting(self, message: str) -> bool:
@@ -92,23 +124,46 @@ class MessageProcessor:
         Returns:
             Response with sales information
         """
+        start_time = time.time()
+        logger.info(f"💰 SALES HANDLER START")
+        
         try:
             # Extract merchant ID from phone number or use default
+            merchant_start = time.time()
             merchant_id = self._get_merchant_id(from_number)
+            merchant_time = (time.time() - merchant_start) * 1000
+            logger.info(f"⏱️  MERCHANT ID EXTRACTION TIME: {merchant_time:.2f}ms")
             
             # Check if cache is fresh, if not, refresh it
+            cache_check_start = time.time()
             if not self.sales_processor.is_cache_fresh(merchant_id):
                 logger.info(f"Cache is stale for merchant {merchant_id}, refreshing...")
+                refresh_start = time.time()
                 self.sales_processor.process_and_cache_sales_data(merchant_id)
+                refresh_time = (time.time() - refresh_start) * 1000
+                logger.info(f"⏱️  CACHE REFRESH TIME: {refresh_time:.2f}ms")
+            cache_check_time = (time.time() - cache_check_start) * 1000
+            logger.info(f"⏱️  CACHE CHECK TIME: {cache_check_time:.2f}ms")
             
             # Get sales data
+            data_fetch_start = time.time()
             sales_data = self._get_relevant_sales_data(message, merchant_id)
+            data_fetch_time = (time.time() - data_fetch_start) * 1000
+            logger.info(f"⏱️  SALES DATA FETCH TIME: {data_fetch_time:.2f}ms")
             
             # Use LLM to generate a natural response
-            return self._generate_llm_response(message, sales_data)
+            llm_start = time.time()
+            response = self._generate_llm_response(message, sales_data)
+            llm_time = (time.time() - llm_start) * 1000
+            logger.info(f"⏱️  LLM RESPONSE GENERATION TIME: {llm_time:.2f}ms")
+            
+            total_time = (time.time() - start_time) * 1000
+            logger.info(f"💰 SALES HANDLER END - Total time: {total_time:.2f}ms")
+            return response
             
         except Exception as e:
-            logger.error(f"Error handling sales question: {e}")
+            total_time = (time.time() - start_time) * 1000
+            logger.error(f"❌ Error handling sales question after {total_time:.2f}ms: {e}")
             return "I'm having trouble accessing your sales data right now. Please try again later."
     
     def _handle_general_question(self, message: str, from_number: str) -> str:

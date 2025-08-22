@@ -49,6 +49,7 @@ class WhatsAppMessage(db.Model):
     response_body = db.Column(db.Text, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     processed = db.Column(db.Boolean, default=False)
+    response_time_ms = db.Column(db.Integer, nullable=True)  # Time taken to process and respond in milliseconds
     
     def __repr__(self):
         return f'<WhatsAppMessage {self.message_sid}: {self.message_body[:50]}...>'
@@ -62,6 +63,7 @@ class WhatsAppMessage(db.Model):
             'message_body': self.message_body,
             'response_body': self.response_body,
             'timestamp': self.timestamp.isoformat() if self.timestamp else None,
-            'processed': self.processed
+            'processed': self.processed,
+            'response_time_ms': self.response_time_ms
         }
 

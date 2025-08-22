@@ -3,6 +3,9 @@ Webhook routes for handling WhatsApp messages from Twilio.
 """
 
 import logging
+import uuid
+import time
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.request_validator import RequestValidator
@@ -25,32 +28,54 @@ def whatsapp_webhook():
     """
     Handle incoming WhatsApp messages from Twilio.
     """
+    start_time = time.time()
+    logger.info(f"🚀 WEBHOOK START - Processing new WhatsApp message")
+    
     try:
         # Validate the request (skip in development mode)
+        validation_start = time.time()
         if Config.TWILIO_AUTH_TOKEN and not Config.FLASK_ENV == 'development' and not _validate_twilio_request():
             logger.warning("Invalid Twilio request signature")
             return jsonify({'error': 'Invalid request'}), 403
+        validation_time = (time.time() - validation_start) * 1000
+        logger.info(f"⏱️  VALIDATION TIME: {validation_time:.2f}ms")
         
         # Extract message data
+        extraction_start = time.time()
+        message_sid = request.form.get('MessageSid')
+        
+        # Auto-generate MessageSid for local testing if not provided or empty
+        if not message_sid or message_sid.strip() == '':
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_id = str(uuid.uuid4())[:8]
+            message_sid = f"LOCAL_TEST_{timestamp}_{unique_id}"
+            logger.info(f"Auto-generated MessageSid for local testing: {message_sid}")
+        
         message_data = {
-            'message_sid': request.form.get('MessageSid'),
+            'message_sid': message_sid,
             'from_number': request.form.get('From'),
             'to_number': request.form.get('To'),
             'message_body': request.form.get('Body', '').strip(),
             'num_media': int(request.form.get('NumMedia', 0))
         }
+        extraction_time = (time.time() - extraction_start) * 1000
+        logger.info(f"⏱️  DATA EXTRACTION TIME: {extraction_time:.2f}ms")
+        logger.info(f"📨 Received WhatsApp message: {message_data}")
         
-        logger.info(f"Received WhatsApp message: {message_data}")
-        
-        # Store the incoming message (handle duplicates)
+        # Database operations - check for duplicates
+        db_check_start = time.time()
         existing_message = WhatsAppMessage.query.filter_by(
             message_sid=message_data['message_sid']
         ).first()
+        db_check_time = (time.time() - db_check_start) * 1000
+        logger.info(f"⏱️  DB DUPLICATE CHECK TIME: {db_check_time:.2f}ms")
         
         if existing_message:
             # Message already exists, skip processing if already processed
             if existing_message.processed:
-                logger.info(f"Message {message_data['message_sid']} already processed, returning cached response")
+                total_time = (time.time() - start_time) * 1000
+                logger.info(f"♻️  Message {message_data['message_sid']} already processed, returning cached response")
+                logger.info(f"🏁 WEBHOOK END (CACHED) - Total time: {total_time:.2f}ms")
                 # Return the cached response instead of empty response
                 twiml_response = MessagingResponse()
                 twiml_response.message(existing_message.response_body or "I've already processed this message.")
@@ -60,6 +85,7 @@ def whatsapp_webhook():
             whatsapp_message = existing_message
         else:
             # Create new message record
+            db_create_start = time.time()
             whatsapp_message = WhatsAppMessage(
                 message_sid=message_data['message_sid'],
                 from_number=message_data['from_number'],
@@ -69,23 +95,40 @@ def whatsapp_webhook():
             
             db.session.add(whatsapp_message)
             db.session.commit()
+            db_create_time = (time.time() - db_create_start) * 1000
+            logger.info(f"⏱️  DB CREATE MESSAGE TIME: {db_create_time:.2f}ms")
         
         # Process the message and generate response
+        processing_start = time.time()
         response_text = message_processor.process_message(
             message_data['message_body'],
             message_data['from_number']
         )
+        processing_time = (time.time() - processing_start) * 1000
+        logger.info(f"⏱️  MESSAGE PROCESSING TIME: {processing_time:.2f}ms")
         
         # Update the stored message with the response
+        db_update_start = time.time()
         whatsapp_message.response_body = response_text
         whatsapp_message.processed = True
+        
+        # Calculate and store total response time
+        total_response_time = (time.time() - start_time) * 1000
+        whatsapp_message.response_time_ms = int(total_response_time)
+        
         db.session.commit()
+        db_update_time = (time.time() - db_update_start) * 1000
+        logger.info(f"⏱️  DB UPDATE MESSAGE TIME: {db_update_time:.2f}ms")
         
         # Create Twilio response
+        twiml_start = time.time()
         twiml_response = MessagingResponse()
         twiml_response.message(response_text)
+        twiml_time = (time.time() - twiml_start) * 1000
+        logger.info(f"⏱️  TWIML GENERATION TIME: {twiml_time:.2f}ms")
         
-        logger.info(f"Sent response: {response_text}")
+        logger.info(f"📤 Sent response: {response_text}")
+        logger.info(f"🏁 WEBHOOK END - Total time: {total_response_time:.2f}ms")
         
         return str(twiml_response), 200, {'Content-Type': 'text/xml'}
         

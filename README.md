@@ -107,7 +107,19 @@ Before setting up the application, you'll need:
 
 5. **Run locally**
    ```bash
-   python src/main.py
+   make run-dev
+   ```
+
+6. **Set up ngrok for WhatsApp testing (Development)**
+   ```bash
+   # Install ngrok if not already installed
+   # Download from https://ngrok.com/download
+   
+   # Start ngrok tunnel (in a separate terminal)
+   ngrok http 5000
+   
+   # Copy the HTTPS URL (e.g., https://abc123.ngrok.io)
+   # Use this URL in your Twilio webhook configuration
    ```
 
 ## ⚙️ Configuration
@@ -138,9 +150,10 @@ See [ENVIRONMENT_VARIABLES.md](ENVIRONMENT_VARIABLES.md) for complete configurat
 
 ## 📖 Documentation
 
-- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Complete deployment instructions
-- **[Environment Variables](ENVIRONMENT_VARIABLES.md)** - Configuration reference
-- **[Troubleshooting](TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Complete deployment instructions
+- **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)** - Configuration reference
+- **[WhatsApp Integration Guide](docs/WHATSAPP_INTEGRATION.md)** - Complete WhatsApp setup with ngrok
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - **[API Documentation](docs/API.md)** - REST API endpoints
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and components
 
