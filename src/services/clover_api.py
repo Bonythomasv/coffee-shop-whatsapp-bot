@@ -55,19 +55,18 @@ class CloverAPIClient:
             return self._get_mock_orders(start_date, end_date)
         
         try:
-            url = f"{self.base_url}/v3/merchants/{self.merchant_id}/orders"
+            url = f"{self.base_url}/merchants/{self.merchant_id}/orders"
             params = {
                 'limit': limit,
                 'expand': 'lineItems'
             }
             
-            if start_date:
-                params['filter'] = f'createdTime>={int(start_date.timestamp() * 1000)}'
-            if end_date:
-                if 'filter' in params:
-                    params['filter'] += f' AND createdTime<={int(end_date.timestamp() * 1000)}'
-                else:
-                    params['filter'] = f'createdTime<={int(end_date.timestamp() * 1000)}'
+            # For now, let's try without date filtering to test the basic API call
+            # TODO: Re-enable date filtering once we confirm the API works
+            # if start_date and end_date:
+            #     start_ms = int(start_date.timestamp() * 1000)
+            #     end_ms = int(end_date.timestamp() * 1000)
+            #     params['filter'] = f'createdTime>={start_ms} AND createdTime<={end_ms}'
             
             response = self.session.get(url, params=params)
             response.raise_for_status()
@@ -91,7 +90,7 @@ class CloverAPIClient:
             return self._get_mock_inventory()
         
         try:
-            url = f"{self.base_url}/v3/merchants/{self.merchant_id}/items"
+            url = f"{self.base_url}/merchants/{self.merchant_id}/items"
             
             response = self.session.get(url)
             response.raise_for_status()

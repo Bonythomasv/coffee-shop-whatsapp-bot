@@ -1,0 +1,743 @@
+{
+  "info": {
+    "name": "Coffee Shop WhatsApp Bot Tests",
+    "description": "Complete test collection for WhatsApp bot with sales analytics, AI insights, and business recommendations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "description": "Base URL for the Flask app"
+    },
+    {
+      "key": "from_number",
+      "value": "whatsapp:+1234567890",
+      "description": "Test WhatsApp number"
+    },
+    {
+      "key": "to_number",
+      "value": "whatsapp:+14155238886",
+      "description": "Twilio WhatsApp sandbox number"
+    }
+  ],
+  "item": [
+    {
+      "name": "Basic Functionality Tests",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Greeting Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "Hello"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Help Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "help"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sales Analytics Questions",
+      "item": [
+        {
+          "name": "Best Selling Items",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What are my best selling items?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Top Items This Week",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What are my top items this week?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Most Popular Drink",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What's my most popular drink?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Daily Sales Revenue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What's my sales revenue today?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Weekly Revenue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "How much revenue did I make this week?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Quantity Sold Today",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "How many items did I sell today?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Insights & Business Recommendations",
+      "item": [
+        {
+          "name": "Sales Performance Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "How is my coffee shop performing this month?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Menu Optimization Suggestions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What menu items should I promote or remove?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Revenue Growth Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "How can I increase my coffee shop revenue?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Customer Trends Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What are the customer buying trends I should know about?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Inventory Management Advice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What inventory should I stock more of based on sales?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Pricing Strategy Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "Should I adjust my pricing based on current sales data?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Time-Based Queries",
+      "item": [
+        {
+          "name": "Yesterday's Performance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "How did I perform yesterday?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Last 7 Days Sales",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What were my sales in the last 7 days?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Monthly Revenue Summary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "Give me a summary of this month's revenue"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Edge Cases & Error Handling",
+      "item": [
+        {
+          "name": "Empty Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Unrecognized Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "What's the weather like today?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "Very Long Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "From",
+                  "value": "{{from_number}}"
+                },
+                {
+                  "key": "To",
+                  "value": "{{to_number}}"
+                },
+                {
+                  "key": "Body",
+                  "value": "This is a very long message to test how the bot handles lengthy input text that might exceed normal message limits and see if it can still process sales questions effectively when embedded in a lot of extra text. What are my best selling items this week and how much revenue did they generate?"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["webhook"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

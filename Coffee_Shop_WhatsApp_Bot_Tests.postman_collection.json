@@ -1,0 +1,1092 @@
+{
+	"info": {
+		"_postman_id": "coffee-shop-bot-tests",
+		"name": "Coffee Shop WhatsApp Bot Tests",
+		"description": "Complete test collection for Coffee Shop WhatsApp Bot with various question types including sales analytics, AI insights, and business recommendations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Sales Analytics",
+			"item": [
+				{
+					"name": "What are my top items?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What are my top items?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_TOP_ITEMS_001"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Best-selling drink this week",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What's my best-selling drink this week?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_BEST_DRINK_002"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Show me my revenue",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Show me my revenue"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_REVENUE_003"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "How much money did I make?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "How much money did I make this week?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_MONEY_004"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Category-Specific Questions",
+			"item": [
+				{
+					"name": "Show me coffee sales",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Show me coffee sales"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_COFFEE_005"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "What are my best pastries?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What are my best pastries?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_PASTRIES_006"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "How are my beverages performing?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "How are my beverages performing?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_BEVERAGES_007"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "AI-Powered Business Insights",
+			"item": [
+				{
+					"name": "What trends do you see?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What trends do you see in my sales?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_TRENDS_008"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Give me business insights",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Give me business insights"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_INSIGHTS_009"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Analyze my sales performance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Analyze my sales performance"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_ANALYZE_010"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Business Recommendations",
+			"item": [
+				{
+					"name": "How can I improve my revenue?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "How can I improve my revenue?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_IMPROVE_011"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "What should I focus on selling?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What should I focus on selling?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_FOCUS_012"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Which products should I promote?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Which products should I promote more?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_PROMOTE_013"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Specific Product Questions",
+			"item": [
+				{
+					"name": "How many cappuccinos did I sell?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "How many cappuccinos did I sell?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_CAPPUCCINO_014"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "What's my latte performance?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What's my latte performance?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_LATTE_015"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Compare coffee vs pastry sales",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Compare coffee vs pastry sales"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_COMPARE_016"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Conversational Questions",
+			"item": [
+				{
+					"name": "Which drink is most popular?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "I want to know which drink is most popular"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_POPULAR_017"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Tell me about sales performance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Can you tell me about my sales performance?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_PERFORMANCE_018"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "What's doing well in my shop?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What's doing well in my shop?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_DOING_WELL_019"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Help & General Commands",
+			"item": [
+				{
+					"name": "Hello",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Hello"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_HELLO_020"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "Help",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "Help"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_HELP_021"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				},
+				{
+					"name": "What can you do?",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "From",
+									"value": "whatsapp:+1234567890"
+								},
+								{
+									"key": "To",
+									"value": "whatsapp:+14155238886"
+								},
+								{
+									"key": "Body",
+									"value": "What can you do?"
+								},
+								{
+									"key": "MessageSid",
+									"value": "TEST_CAPABILITIES_022"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook/whatsapp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook",
+								"whatsapp"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "API Endpoints",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					}
+				},
+				{
+					"name": "Sales Summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sales/summary",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sales",
+								"summary"
+							]
+						}
+					}
+				},
+				{
+					"name": "Best Selling Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sales/best-selling",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sales",
+								"best-selling"
+							]
+						}
+					}
+				},
+				{
+					"name": "Sales by Category - Coffee",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sales/category/Coffee",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sales",
+								"category",
+								"Coffee"
+							]
+						}
+					}
+				},
+				{
+					"name": "Refresh Sales Data",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sales/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sales",
+								"refresh"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+}

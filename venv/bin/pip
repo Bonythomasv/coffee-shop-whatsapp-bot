@@ -1,4 +1,4 @@
-#!/home/ubuntu/coffee-shop-whatsapp-bot/venv/bin/python3.11
+#!/Users/bonythomas/Documents/code/coffee-shop-whatsapp-bot/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys

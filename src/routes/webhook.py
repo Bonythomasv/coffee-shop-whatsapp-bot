@@ -26,8 +26,8 @@ def whatsapp_webhook():
     Handle incoming WhatsApp messages from Twilio.
     """
     try:
-        # Validate the request (optional but recommended for production)
-        if Config.TWILIO_AUTH_TOKEN and not _validate_twilio_request():
+        # Validate the request (skip in development mode)
+        if Config.TWILIO_AUTH_TOKEN and not Config.FLASK_ENV == 'development' and not _validate_twilio_request():
             logger.warning("Invalid Twilio request signature")
             return jsonify({'error': 'Invalid request'}), 403
         
@@ -42,16 +42,33 @@ def whatsapp_webhook():
         
         logger.info(f"Received WhatsApp message: {message_data}")
         
-        # Store the incoming message
-        whatsapp_message = WhatsAppMessage(
-            message_sid=message_data['message_sid'],
-            from_number=message_data['from_number'],
-            to_number=message_data['to_number'],
-            message_body=message_data['message_body']
-        )
+        # Store the incoming message (handle duplicates)
+        existing_message = WhatsAppMessage.query.filter_by(
+            message_sid=message_data['message_sid']
+        ).first()
         
-        db.session.add(whatsapp_message)
-        db.session.commit()
+        if existing_message:
+            # Message already exists, skip processing if already processed
+            if existing_message.processed:
+                logger.info(f"Message {message_data['message_sid']} already processed, returning cached response")
+                # Return the cached response instead of empty response
+                twiml_response = MessagingResponse()
+                twiml_response.message(existing_message.response_body or "I've already processed this message.")
+                return str(twiml_response), 200, {'Content-Type': 'text/xml'}
+            
+            # Use existing message record
+            whatsapp_message = existing_message
+        else:
+            # Create new message record
+            whatsapp_message = WhatsAppMessage(
+                message_sid=message_data['message_sid'],
+                from_number=message_data['from_number'],
+                to_number=message_data['to_number'],
+                message_body=message_data['message_body']
+            )
+            
+            db.session.add(whatsapp_message)
+            db.session.commit()
         
         # Process the message and generate response
         response_text = message_processor.process_message(

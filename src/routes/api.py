@@ -8,6 +8,7 @@ from src.services.sales_processor import SalesProcessor
 from src.services.clover_api import CloverAPIClient
 from src.models.sales_cache import SalesCache, WhatsAppMessage
 from src.models.user import db
+from src.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def get_best_selling_items():
     - category: Filter by category (optional)
     """
     try:
-        merchant_id = request.args.get('merchant_id', 'TEST_MERCHANT_001')
+        merchant_id = request.args.get('merchant_id', Config.CLOVER_MERCHANT_ID or 'TEST_MERCHANT_001')
         limit = int(request.args.get('limit', 10))
         category = request.args.get('category')
         
@@ -64,7 +65,7 @@ def refresh_sales_data():
     """
     try:
         data = request.get_json() or {}
-        merchant_id = data.get('merchant_id', 'TEST_MERCHANT_001')
+        merchant_id = data.get('merchant_id', Config.CLOVER_MERCHANT_ID or 'TEST_MERCHANT_001')
         days_back = data.get('days_back', 7)
         
         # Process and cache sales data
@@ -91,7 +92,7 @@ def get_cache_status():
     - merchant_id: Merchant ID (default: TEST_MERCHANT_001)
     """
     try:
-        merchant_id = request.args.get('merchant_id', 'TEST_MERCHANT_001')
+        merchant_id = request.args.get('merchant_id', Config.CLOVER_MERCHANT_ID or 'TEST_MERCHANT_001')
         
         # Check cache freshness
         is_fresh = sales_processor.is_cache_fresh(merchant_id)
@@ -118,6 +119,41 @@ def get_cache_status():
         
     except Exception as e:
         logger.error(f"Error getting cache status: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@api_bp.route('/sales/cache-clear', methods=['POST'])
+def clear_sales_cache():
+    """
+    Clear sales cache for a specific merchant.
+    
+    JSON body:
+    - merchant_id: Merchant ID to clear cache for (required)
+    """
+    try:
+        data = request.get_json() or {}
+        merchant_id = data.get('merchant_id')
+        
+        if not merchant_id:
+            return jsonify({
+                'success': False,
+                'error': 'merchant_id is required'
+            }), 400
+        
+        # Clear cache for the specified merchant
+        deleted_count = SalesCache.query.filter_by(merchant_id=merchant_id).delete()
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Cleared {deleted_count} cache entries for merchant {merchant_id}'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error clearing cache: {e}")
+        db.session.rollback()
         return jsonify({
             'success': False,
             'error': str(e)
@@ -180,6 +216,71 @@ def health_check():
         return jsonify({
             'success': False,
             'status': 'unhealthy',
+            'error': str(e)
+        }), 500
+
+@api_bp.route('/env', methods=['GET'])
+def get_environment_variables():
+    """
+    Display environment variables for debugging.
+    Note: Sensitive values are masked for security.
+    """
+    import os
+    from src.config import Config
+    
+    try:
+        # Get all environment variables related to the app
+        env_vars = {
+            'FLASK_ENV': os.getenv('FLASK_ENV', 'NOT SET'),
+            'FLASK_DEBUG': os.getenv('FLASK_DEBUG', 'NOT SET'),
+            'SECRET_KEY': 'SET' if os.getenv('SECRET_KEY') else 'NOT SET',
+            'DATABASE_URL': 'SET' if os.getenv('DATABASE_URL') else 'NOT SET',
+            
+            # Clover API
+            'CLOVER_API_TOKEN': 'SET' if os.getenv('CLOVER_API_TOKEN') else 'NOT SET',
+            'CLOVER_MERCHANT_ID': 'SET' if os.getenv('CLOVER_MERCHANT_ID') else 'NOT SET',
+            'CLOVER_BASE_URL': os.getenv('CLOVER_BASE_URL', 'NOT SET'),
+            
+            # Twilio
+            'TWILIO_ACCOUNT_SID': 'SET' if os.getenv('TWILIO_ACCOUNT_SID') else 'NOT SET',
+            'TWILIO_AUTH_TOKEN': 'SET' if os.getenv('TWILIO_AUTH_TOKEN') else 'NOT SET',
+            'TWILIO_WHATSAPP_NUMBER': os.getenv('TWILIO_WHATSAPP_NUMBER', 'NOT SET'),
+            
+            # LLM
+            'LLM_PROVIDER': os.getenv('LLM_PROVIDER', 'NOT SET'),
+            'OPENAI_API_KEY': 'SET' if os.getenv('OPENAI_API_KEY') else 'NOT SET',
+            'OPENAI_MODEL': os.getenv('OPENAI_MODEL', 'NOT SET'),
+            'TOGETHER_API_KEY': 'SET' if os.getenv('TOGETHER_API_KEY') else 'NOT SET',
+            'XAI_API_KEY': 'SET' if os.getenv('XAI_API_KEY') else 'NOT SET',
+            
+            # Other
+            'DEBUG': os.getenv('DEBUG', 'NOT SET'),
+            'TESTING': os.getenv('TESTING', 'NOT SET'),
+            'LOG_LEVEL': os.getenv('LOG_LEVEL', 'NOT SET'),
+            'CACHE_EXPIRY_HOURS': os.getenv('CACHE_EXPIRY_HOURS', 'NOT SET')
+        }
+        
+        # Config class values
+        config_values = {
+            'Config.CLOVER_ACCESS_TOKEN': 'SET' if Config.CLOVER_ACCESS_TOKEN else 'NOT SET',
+            'Config.CLOVER_MERCHANT_ID': 'SET' if Config.CLOVER_MERCHANT_ID else 'NOT SET',
+            'Config.CLOVER_API_BASE_URL': Config.CLOVER_API_BASE_URL,
+            'Config.OPENAI_API_KEY': 'SET' if Config.OPENAI_API_KEY else 'NOT SET',
+            'Config.TWILIO_ACCOUNT_SID': 'SET' if Config.TWILIO_ACCOUNT_SID else 'NOT SET',
+            'Config.SQLALCHEMY_DATABASE_URI': 'SET' if Config.SQLALCHEMY_DATABASE_URI else 'NOT SET'
+        }
+        
+        return jsonify({
+            'success': True,
+            'environment_variables': env_vars,
+            'config_class_values': config_values,
+            'note': 'Sensitive values are masked for security'
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting environment variables: {e}")
+        return jsonify({
+            'success': False,
             'error': str(e)
         }), 500
 

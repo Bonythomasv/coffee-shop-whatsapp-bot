@@ -121,7 +121,7 @@ class SalesProcessor:
     
     def _update_sales_cache(self, merchant_id: str, sales_data: Dict, start_date: datetime, end_date: datetime) -> List[str]:
         """
-        Update the sales cache in the database.
+        Update the sales cache in the database using upsert logic.
         
         Args:
             merchant_id: Merchant ID
@@ -135,12 +135,8 @@ class SalesProcessor:
         updated_items = []
         
         try:
-            # Clear existing cache for this period and merchant
-            SalesCache.query.filter_by(
-                merchant_id=merchant_id,
-                period_start=start_date,
-                period_end=end_date
-            ).delete()
+            # Clear existing cache for this merchant (broader cleanup)
+            SalesCache.query.filter_by(merchant_id=merchant_id).delete()
             
             # Insert new cache entries
             for item_id, metrics in sales_data.items():

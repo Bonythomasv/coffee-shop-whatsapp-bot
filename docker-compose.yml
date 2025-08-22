@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@db:5432/coffee_shop_bot
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: python src/main.py
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=coffee_shop_bot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  test:
+    build: .
+    environment:
+      - FLASK_ENV=testing
+      - DATABASE_URL=postgresql://postgres:password@db:5432/coffee_shop_bot_test
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: make test
+
+volumes:
+  postgres_data:

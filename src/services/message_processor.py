@@ -21,8 +21,8 @@ class MessageProcessor:
         
         # Common patterns for sales-related questions
         self.sales_patterns = [
-            r'best.selling|top.selling|most.popular',
-            r'sales|revenue|income',
+            r'best.selling|top.selling|most.popular|best.*items?|top.*items?',
+            r'sales|revenue|income|money|made|earn',
             r'how.many|quantity|sold',
             r'what.*drink|beverage|coffee',
             r'this.week|today|yesterday|last.*days?'
@@ -68,7 +68,9 @@ class MessageProcessor:
     def _is_greeting(self, message: str) -> bool:
         """Check if the message is a greeting."""
         greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']
-        return any(greeting in message for greeting in greetings)
+        # Only match if the message is primarily a greeting (not mixed with other content)
+        message_words = message.split()
+        return len(message_words) <= 3 and any(greeting in message for greeting in greetings)
     
     def _is_help_request(self, message: str) -> bool:
         """Check if the message is asking for help."""
@@ -131,12 +133,12 @@ class MessageProcessor:
     
     def _get_merchant_id(self, from_number: str) -> str:
         """
-        Get merchant ID from phone number.
-        In a real implementation, this would look up the merchant ID from a database.
-        For now, we'll use a default test merchant ID.
+        Extract merchant ID from phone number or use default.
+        
+        Uses the merchant ID from environment configuration.
         """
-        # TODO: Implement proper merchant lookup
-        return "TEST_MERCHANT_001"
+        # Use the merchant ID from config (loaded from .env)
+        return Config.CLOVER_MERCHANT_ID or "TEST_MERCHANT_001"
     
     def _get_relevant_sales_data(self, message: str, merchant_id: str) -> Dict:
         """

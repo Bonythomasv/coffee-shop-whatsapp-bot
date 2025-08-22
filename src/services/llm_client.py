@@ -1,10 +1,11 @@
 """
-LLM client for generating natural language responses using OpenAI GPT.
+LLM client for generating natural language responses using various LLM providers.
+Supported providers: OpenAI, DeepSeek, Together AI, xAI
 """
 
 import logging
 import openai
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from src.config import Config
 
 logger = logging.getLogger(__name__)
@@ -13,22 +14,47 @@ class LLMClient:
     """Client for interacting with LLM services."""
     
     def __init__(self):
-        """Initialize the LLM client."""
+        """Initialize the LLM client with the configured provider."""
         self.provider = Config.LLM_PROVIDER
+        self.client = None
+        self.model = None
+        self.use_llm = False
         
-        # Initialize OpenAI client
-        if Config.OPENAI_API_KEY:
-            self.openai_client = openai.OpenAI(api_key=Config.OPENAI_API_KEY)
+        # Initialize the appropriate client based on provider
+        if self.provider == 'openai' and Config.OPENAI_API_KEY:
+            self.client = openai.OpenAI(api_key=Config.OPENAI_API_KEY)
             self.model = Config.OPENAI_MODEL
-            self.use_openai = True
-            logger.info(f"OpenAI client initialized with model: {self.model}")
-        else:
-            self.use_openai = False
-            logger.warning("OpenAI API key not configured, using fallback responses")
+            self.use_llm = True
+            logger.info(f"Using OpenAI with model: {self.model}")
+            
+        elif self.provider == 'deepseek' and Config.DEEPSEEK_API_KEY:
+            self.client = openai.OpenAI(
+                api_key=Config.DEEPSEEK_API_KEY,
+                base_url=Config.DEEPSEEK_API_BASE
+            )
+            self.model = Config.DEEPSEEK_MODEL
+            self.use_llm = True
+            logger.info(f"Using DeepSeek with model: {self.model}")
+            
+        elif self.provider == 'together' and Config.TOGETHER_API_KEY:
+            self.client = openai.OpenAI(
+                api_key=Config.TOGETHER_API_KEY,
+                base_url="https://api.together.xyz/v1"
+            )
+            self.model = Config.TOGETHER_MODEL
+            self.use_llm = True
+            logger.info(f"Using Together AI with model: {self.model}")
+            
+        elif self.provider == 'xai' and Config.XAI_API_KEY:
+            # xAI would require custom client implementation
+            logger.warning("xAI provider is not fully implemented yet, using fallback")
+            
+        if not self.use_llm:
+            logger.warning(f"LLM provider '{self.provider}' not properly configured, using fallback responses")
     
     def generate_response(self, question: str, context: str = "", sales_data: Dict = None) -> str:
         """
-        Generate a response using LLM.
+        Generate a response using the configured LLM provider.
         
         Args:
             question: The user's question
@@ -39,25 +65,28 @@ class LLMClient:
             Generated response text
         """
         try:
-            if self.use_openai:
-                return self._generate_openai_response(question, context, sales_data)
+            if self.use_llm and self.client:
+                return self._generate_llm_response(question, context, sales_data)
             else:
                 return self._generate_fallback_response(question, sales_data)
                 
         except Exception as e:
-            logger.error(f"Error generating LLM response: {e}")
+            logger.error(f"Error generating {self.provider} response: {e}")
             return self._generate_fallback_response(question, sales_data)
     
-    def _generate_openai_response(self, question: str, context: str, sales_data: Dict = None) -> str:
-        """Generate response using OpenAI GPT."""
+    def _generate_llm_response(self, question: str, context: str, sales_data: Dict = None) -> str:
+        """Generate response using the configured LLM provider."""
+        if not self.use_llm or not self.client:
+            return self._generate_fallback_response(question, sales_data)
+            
         try:
             # Prepare the prompt
             prompt = self._prepare_prompt(question, context, sales_data)
             
-            # Make API call to OpenAI
-            response = self.openai_client.chat.completions.create(
-                model=self.model,
-                messages=[
+            # Common parameters for all providers
+            params = {
+                "model": self.model,
+                "messages": [
                     {
                         "role": "system",
                         "content": "You are a helpful AI assistant for a coffee shop owner. You provide clear, concise, and friendly responses about sales data and business analytics. Always be professional but approachable."
@@ -67,22 +96,33 @@ class LLMClient:
                         "content": prompt
                     }
                 ],
-                max_tokens=200,
-                temperature=0.7
-            )
+                "max_tokens": 200,
+                "temperature": 0.7
+            }
+            
+            # Provider-specific adjustments
+            if self.provider == 'deepseek':
+                # DeepSeek specific parameters if needed
+                pass
+            elif self.provider == 'together':
+                # Together AI specific parameters
+                params['stop'] = ['</s>', '###']
+            
+            # Make API call to the configured provider
+            response = self.client.chat.completions.create(**params)
             
             # Extract the response
             generated_text = response.choices[0].message.content.strip()
             
             # Validate response length
             if len(generated_text) < 10:
-                logger.warning("OpenAI response too short, using fallback")
+                logger.warning(f"{self.provider.capitalize()} response too short, using fallback")
                 return self._generate_fallback_response(question, sales_data)
             
             return generated_text
             
         except Exception as e:
-            logger.error(f"OpenAI API error: {e}")
+            logger.error(f"{self.provider.capitalize()} API error: {e}")
             return self._generate_fallback_response(question, sales_data)
     
     def _prepare_prompt(self, question: str, context: str, sales_data: Dict = None) -> str:
@@ -185,7 +225,7 @@ Just ask me any question about your sales and I'll help you find the answer!"""
     
     def analyze_sales_trends(self, sales_data: List[Dict], question: str) -> str:
         """
-        Analyze sales trends and provide insights.
+        Analyze sales trends and provide insights using the configured LLM provider.
         
         Args:
             sales_data: List of sales data dictionaries
@@ -197,43 +237,53 @@ Just ask me any question about your sales and I'll help you find the answer!"""
         if not sales_data:
             return "I don't have enough sales data to analyze trends right now."
         
+        if not self.use_llm or not self.client:
+            return self._simple_trend_analysis(sales_data, question)
+        
         try:
-            if self.use_openai:
-                # Prepare trend analysis prompt
-                prompt = f"""
-                Analyze the following sales data and answer the question: {question}
-                
-                Sales Data:
-                {self._format_sales_data_for_analysis(sales_data)}
-                
-                Please provide insights about trends, patterns, or specific answers to the question.
-                Keep the response concise and actionable for a coffee shop owner.
-                """
-                
-                response = self.openai_client.chat.completions.create(
-                    model=self.model,
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": "You are a business analyst specializing in coffee shop operations. Provide clear, actionable insights."
-                        },
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ],
-                    max_tokens=300,
-                    temperature=0.5
-                )
-                
-                return response.choices[0].message.content.strip()
+            # Prepare trend analysis prompt
+            prompt = f"""
+            Analyze the following sales data and answer the question: {question}
             
-            else:
-                # Simple trend analysis without LLM
-                return self._simple_trend_analysis(sales_data, question)
-                
+            Sales Data:
+            {self._format_sales_data_for_analysis(sales_data)}
+            
+            Please provide insights about trends, patterns, or specific answers to the question.
+            Keep the response concise and actionable for a coffee shop owner.
+            """
+            
+            # Common parameters for all providers
+            params = {
+                "model": self.model,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a business analyst specializing in coffee shop operations. Provide clear, actionable insights."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "max_tokens": 300,
+                "temperature": 0.5
+            }
+            
+            # Provider-specific adjustments
+            if self.provider == 'deepseek':
+                # DeepSeek specific parameters if needed
+                pass
+            elif self.provider == 'together':
+                # Together AI specific parameters
+                params['stop'] = ['</s>', '###']
+            
+            # Make API call to the configured provider
+            response = self.client.chat.completions.create(**params)
+            
+            return response.choices[0].message.content.strip()
+            
         except Exception as e:
-            logger.error(f"Error in trend analysis: {e}")
+            logger.error(f"Error in {self.provider} trend analysis: {e}")
             return self._simple_trend_analysis(sales_data, question)
     
     def _format_sales_data_for_analysis(self, sales_data: List[Dict]) -> str:

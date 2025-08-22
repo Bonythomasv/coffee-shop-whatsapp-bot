@@ -43,8 +43,8 @@ class WhatsAppMessage(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     message_sid = db.Column(db.String(100), unique=True, nullable=False)
-    from_number = db.Column(db.String(20), nullable=False)
-    to_number = db.Column(db.String(20), nullable=False)
+    from_number = db.Column(db.String(50), nullable=False)
+    to_number = db.Column(db.String(50), nullable=False)
     message_body = db.Column(db.Text, nullable=False)
     response_body = db.Column(db.Text, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
